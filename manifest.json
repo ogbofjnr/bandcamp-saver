@@ -1,9 +1,9 @@
 {
     "manifest_version": 2,
 
-    "name": "BandCamp Saver",
+    "name": "Bandcamp Saver",
     "version": "1.0.1",
-    "description": "Allow download mp3 from BandCamp",
+    "description": "Allow download mp3 from Bandcamp",
 
     "permissions": [
         "http://*/*",
@@ -12,7 +12,7 @@
     ],
 
     "browser_action": {
-        "default_title": "BandCamp Saver",
+        "default_title": "Bandcamp Saver",
         "default_icon":  "images/icon128.png"
     },
 
