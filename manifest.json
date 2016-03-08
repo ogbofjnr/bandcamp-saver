@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+
+    "name": "BandCampSaver",
+    "version": "1.0.0",
+    "description": "Allow download mp3 from BandCamp",
+
+    "permissions": [
+        "http://*/*",
+        "https://*/*",
+        "tabs"
+    ],
+
+    "browser_action": {
+        "default_title": "BandCampSaver",
+        "default_icon":  "images/icon128.png"
+    },
+
+    "content_scripts": [
+    {
+      "matches": [
+          "*://*.bandcamp.com/*"
+      ],
+      "js": [
+          "libs/jquery-2.1.1.min.js",
+          "js/content.js"
+      ]
+    }
+  ]
+}
