@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
 
-    "name": "BandCampSaver",
-    "version": "1.0.0",
+    "name": "BandCamp Saver",
+    "version": "1.0.1",
     "description": "Allow download mp3 from BandCamp",
 
     "permissions": [
@@ -12,7 +12,7 @@
     ],
 
     "browser_action": {
-        "default_title": "BandCampSaver",
+        "default_title": "BandCamp Saver",
         "default_icon":  "images/icon128.png"
     },
 
