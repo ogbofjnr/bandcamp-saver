@@ -1,0 +1,10 @@
+.bcs_save-btn {
+    border: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    font-size: 100%;
+    font-weight: bold;
+    background-color: transparent;
+    color: #508EC3;
+}

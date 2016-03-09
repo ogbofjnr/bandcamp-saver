@@ -2,8 +2,8 @@
     "manifest_version": 2,
 
     "name": "Bandcamp Saver",
-    "version": "1.0.2",
-    "description": "Allow download mp3 from Bandcamp",
+    "version": "1.0.3",
+    "description": "Allow to download mp3 from Bandcamp",
 
     "permissions": [
         "http://*/*",
@@ -24,6 +24,9 @@
       "js": [
           "libs/jquery-2.1.1.min.js",
           "js/content.js"
+      ],
+      "css": [
+          "css/style.css"
       ]
     }
   ]
