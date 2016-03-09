@@ -25,8 +25,8 @@ BandcampSaver = (function(){
             SOUND_OBJECT: "TralbumData"
         },
         HTML: {
-            SAVE_LNK_TEMPLATE: "<a class='{0}' data-page='{1}' href='javascript:void(0)'>download</a>",
-            SAVE_BTN_TEMPLATE: "<h4><a class='bcs_save-btn' href='javascript:void(0)'>Download Now</a></h4>"
+            SAVE_LNK_TEMPLATE: "<a class='bcs_save-lnk' data-page='{0}' href='javascript:void(0)'>download track</a>",
+            SAVE_BTN_TEMPLATE: "<h4 class='bcs_save-wrapper'><a class='bcs_save-btn' href='javascript:void(0)'>Download track</a></h4>"
         }
     };
 
@@ -44,7 +44,7 @@ BandcampSaver = (function(){
         preparePage: function(){
             var sounds;
             try{
-                sounds = $($(CONSTANTS.SELECTORS.ALBUM)).find(CONSTANTS.SELECTORS.SOUNDS);
+                sounds = $(CONSTANTS.SELECTORS.ALBUM + " " + CONSTANTS.SELECTORS.SOUNDS);
             }catch(e){
                 console.log(CONSTANTS.ERRORS.SELECT_DOM);
                 return false;
@@ -56,10 +56,10 @@ BandcampSaver = (function(){
                         soundPage = $(this).attr("href");
                         if (soundPage) return false;
                     });
-                    var lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, CONSTANTS.SELECTORS.SAVE_LNK, soundPage);
+                    var lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage);
                     $(soundInfo).children().append(lnk);
                 });
-                $($(".buyItem").children("h4")[0]).after(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
+                $(".buyItem").prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
             }catch(e){
                 console.log(CONSTANTS.ERRORS.UPDATE_DOM);
                 return false;
@@ -97,7 +97,7 @@ BandcampSaver = (function(){
                     console.log(CONSTANTS.ERRORS.DOWNLOAD);
                     BandcampSaver.loading = false;
                 }
-            }).fail(function() {
+            }).fail(function(e) {
                 console.log(CONSTANTS.ERRORS.REQUEST);
             }).always(function() {
                 setTimeout(function() {
@@ -113,7 +113,7 @@ BandcampSaver = (function(){
             });
             $(document).on("click", "." + CONSTANTS.SELECTORS.SAVE_BTN, function(event) {
                 if (!BandcampSaver.loading){
-                    var sound = $($(CONSTANTS.SELECTORS.ALBUM)).find(CONSTANTS.SELECTORS.SOUND);
+                    var sound = $(CONSTANTS.SELECTORS.ALBUM + " " + CONSTANTS.SELECTORS.SOUND);
                     $(event.target).data("page", sound.attr("href"));
                     BandcampSaver.download($(event.target), true);
                 }
