@@ -89,9 +89,11 @@ BandcampSaver = (function(){
                         document.getElementById(trackId).click();
                         //clear href data
                         if (forcibly){
-                            $(elem).removeAttr("id")
-                            $(elem).removeAttr("download");
-                            $(elem).attr("href", "javascript:void(0)");
+                            setTimeout(function() {
+                                $(elem).removeAttr("id")
+                                $(elem).removeAttr("download");
+                                $(elem).attr("href", "javascript:void(0)");
+                            }, 100);
                         }
                     }
                 }catch(e){
