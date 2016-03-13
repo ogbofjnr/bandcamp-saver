@@ -60,7 +60,7 @@ BandcampSaver = (function(){
                     var lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage);
                     $(soundInfo).children().append(lnk);
                 });
-                $(CONSTANTS.SELECTORS.HEAD).prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
+                $(CONSTANTS.SELECTORS.HEAD).first().prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
             }catch(e){
                 console.log(CONSTANTS.ERRORS.UPDATE_DOM);
                 return false;
