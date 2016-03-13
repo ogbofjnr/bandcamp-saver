@@ -22,7 +22,8 @@ BandcampSaver = (function(){
             SOUND: "table:nth-child(1) tr:nth-child(1) td:nth-child(2) a",
             SAVE_LNK: "bcs_save-lnk",
             SAVE_BTN: "bcs_save-btn",
-            SOUND_OBJECT: "TralbumData"
+            SOUND_OBJECT: "TralbumData",
+            HEAD: ".buyItem"
         },
         HTML: {
             SAVE_LNK_TEMPLATE: "<a class='bcs_save-lnk' data-page='{0}' href='javascript:void(0)'>download track</a>",
@@ -59,7 +60,7 @@ BandcampSaver = (function(){
                     var lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage);
                     $(soundInfo).children().append(lnk);
                 });
-                $(".buyItem").prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
+                $(CONSTANTS.SELECTORS.HEAD).prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
             }catch(e){
                 console.log(CONSTANTS.ERRORS.UPDATE_DOM);
                 return false;
