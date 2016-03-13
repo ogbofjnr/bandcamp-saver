@@ -93,7 +93,7 @@ BandcampSaver = (function(){
                                 $(elem).removeAttr("id")
                                 $(elem).removeAttr("download");
                                 $(elem).attr("href", "javascript:void(0)");
-                            }, 100);
+                            }, 250);
                         }
                     }
                 }catch(e){
@@ -105,7 +105,7 @@ BandcampSaver = (function(){
             }).always(function() {
                 setTimeout(function() {
                     BandcampSaver.loading = false;
-                }, 150);
+                }, 300);
             });
         },
         bindUIActions: function() {
