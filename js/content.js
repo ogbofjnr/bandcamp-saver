@@ -13,17 +13,17 @@ BandcampSaver = (function(){
         ERRORS : {
             SELECT_DOM : "Error while apply selectors for page elements",
             UPDATE_DOM : "Error while update page elements",
-            REQUEST: "Error while get sound page",
-            DOWNLOAD: "Error while sound download"
+            REQUEST: "Error while request sound page",
+            PROCESS: "Error while process sound page"
         },
         SELECTORS: {
-            ALBUM: ".trackView",//[itemtype='http://schema.org/MusicAlbum'] or #trackInfo
-            SOUNDS: "[itemtype='http://www.schema.org/MusicRecording']",//tr or .track_row_view
+            ALBUM: ".trackView",//#trackInfo
+            SOUNDS: "[itemtype='http://www.schema.org/MusicRecording']",//.track_row_view
             SOUND: "table:nth-child(1) tr:nth-child(1) td:nth-child(2) a",
             SAVE_LNK: "bcs_save-lnk",
             SAVE_BTN: "bcs_save-btn",
-            SOUND_OBJECT: "TralbumData",
-            HEAD: ".buyItem"
+            PAGE_HEAD: ".buyItem",
+            DOWNLOAD_LNK: "\"mp3-128\""
         },
         HTML: {
             SAVE_LNK_TEMPLATE: "<a class='bcs_save-lnk' data-page='{0}' href='javascript:void(0)'>download track</a>",
@@ -60,7 +60,7 @@ BandcampSaver = (function(){
                     var lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage);
                     $(soundInfo).children().append(lnk);
                 });
-                $(CONSTANTS.SELECTORS.HEAD).first().prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
+                $(CONSTANTS.SELECTORS.PAGE_HEAD).first().prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
             }catch(e){
                 console.log(CONSTANTS.ERRORS.UPDATE_DOM);
                 return false;
@@ -72,40 +72,39 @@ BandcampSaver = (function(){
             BandcampSaver.loading = true;
             $.get(settings.url + $(elem).data("page"), function(data) {
                 try{
-                    var index = data.indexOf(CONSTANTS.SELECTORS.SOUND_OBJECT);
+                    var index = data.indexOf(CONSTANTS.SELECTORS.DOWNLOAD_LNK);
                     if (index >= 0){
                         var tempData = '';
-                        for(var i = index; data[i] != ';'; ++i){
+                        for(var i = index; data[i] != '}'; ++i){
                             tempData += data[i];
                         }
-                        var evalData = eval(tempData);
-                        var soundUrl = evalData.trackinfo[0].file["mp3-128"];
-                        //get sound properly
+                        var downloadLnk = eval(tempData.split(':')[1]);
+                        //prepare for downloading
                         var trackId = Math.random().toString(36).substring(7);
                         $(elem).attr("id", trackId);
                         $(elem).attr("download", "");
-                        $(elem).attr("href", soundUrl);
+                        $(elem).attr("href", downloadLnk);
                         //downloading is here
                         document.getElementById(trackId).click();
-                        //clear href data
+                        //clear
                         if (forcibly){
                             setTimeout(function() {
                                 $(elem).removeAttr("id")
                                 $(elem).removeAttr("download");
                                 $(elem).attr("href", "javascript:void(0)");
-                            }, 250);
+                                BandcampSaver.loading = false;
+                            }, 300);
+                        }else{
+                            BandcampSaver.loading = false;
                         }
                     }
                 }catch(e){
-                    console.log(CONSTANTS.ERRORS.DOWNLOAD);
+                    console.log(CONSTANTS.ERRORS.PROCESS);
                     BandcampSaver.loading = false;
                 }
             }).fail(function(e) {
                 console.log(CONSTANTS.ERRORS.REQUEST);
-            }).always(function() {
-                setTimeout(function() {
-                    BandcampSaver.loading = false;
-                }, 300);
+                BandcampSaver.loading = false;
             });
         },
         bindUIActions: function() {
