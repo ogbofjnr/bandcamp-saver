@@ -1,3 +1,3 @@
 ##Chrome Extension (Bandcamp Saver)
 ------
-Allow to download mp3 from Bandcamp
+Feel free to download mp3 from Bandcamp
