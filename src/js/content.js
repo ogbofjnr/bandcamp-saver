@@ -20,10 +20,10 @@ BandcampSaver = (function(){
             ALBUM: ".trackView",//#trackInfo
             SOUNDS: "[itemtype='http://www.schema.org/MusicRecording']",//.track_row_view
             SOUND: "table:nth-child(1) tr:nth-child(1) td:nth-child(2) a",
+            PAGE_HEAD: ".inline_player",
+            DOWNLOAD_LNK: "\"mp3-128\"",
             SAVE_LNK: "bcs_save-lnk",
-            SAVE_BTN: "bcs_save-btn",
-            PAGE_HEAD: ".buyItem",
-            DOWNLOAD_LNK: "\"mp3-128\""
+            SAVE_BTN: "bcs_save-btn"
         },
         HTML: {
             SAVE_LNK_TEMPLATE: "<a class='bcs_save-lnk' data-page='{0}' href='javascript:void(0)'>download track</a>",
@@ -47,7 +47,7 @@ BandcampSaver = (function(){
             try{
                 sounds = $(CONSTANTS.SELECTORS.ALBUM + " " + CONSTANTS.SELECTORS.SOUNDS);
             }catch(e){
-                console.log(CONSTANTS.ERRORS.SELECT_DOM);
+                console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.SELECT_DOM);
                 return false;
             }
             try{
@@ -60,9 +60,9 @@ BandcampSaver = (function(){
                     var lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage);
                     $(soundInfo).children().append(lnk);
                 });
-                $(CONSTANTS.SELECTORS.PAGE_HEAD).first().prepend(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
+                $(CONSTANTS.SELECTORS.PAGE_HEAD).after(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
             }catch(e){
-                console.log(CONSTANTS.ERRORS.UPDATE_DOM);
+                console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.UPDATE_DOM);
                 return false;
             }
             return true;
@@ -99,11 +99,11 @@ BandcampSaver = (function(){
                         }
                     }
                 }catch(e){
-                    console.log(CONSTANTS.ERRORS.PROCESS);
+                    console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.PROCESS);
                     BandcampSaver.loading = false;
                 }
             }).fail(function(e) {
-                console.log(CONSTANTS.ERRORS.REQUEST);
+                console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.REQUEST);
                 BandcampSaver.loading = false;
             });
         },
