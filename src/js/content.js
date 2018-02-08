@@ -75,10 +75,13 @@ BandcampSaver = (function(){
                     var index = data.indexOf(CONSTANTS.SELECTORS.DOWNLOAD_LNK);
                     if (index >= 0){
                         var tempData = '';
-                        for(var i = index; data[i] != '}'; ++i){
-                            tempData += data[i];
+                        for (var i = index; data[i] != '}'; ++i) {
+                            if (data[i] !== "'" && data[i] !== '"') {
+                                tempData += data[i];
+                            }
                         }
-                        var downloadLnk = eval(tempData.split(':')[1]);
+                        var fromPosition = tempData.indexOf(':') + 1
+                        var downloadLnk = tempData.substring(fromPosition);
                         //prepare for downloading
                         var trackId = Math.random().toString(36).substring(7);
                         $(elem).attr("id", trackId);
