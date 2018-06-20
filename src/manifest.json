@@ -8,7 +8,9 @@
     "permissions": [
         "http://*/*",
         "https://*/*",
-        "tabs"
+        "tabs",
+        "background",
+        "downloads"
     ],
 
     "browser_action": {
@@ -29,5 +31,21 @@
           "css/style.css"
       ]
     }
-  ]
+  ],
+
+  "background": {
+    "scripts": ["js/background.js"],
+    "persistent": false
+  },
+
+  "externally_connectable": {
+    "ids": [
+      "*"
+    ],
+    "matches": [
+      "*://*.bandcamp.com/*"
+    ],
+    "accepts_tls_channel_id": true
+  }
+
 }

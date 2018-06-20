@@ -1,126 +1,157 @@
-BandcampSaver = (function(){
+BandcampSaver = (() => {
 
     String.format = function() {
-          var s = arguments[0];
-          for (var i = 0; i < arguments.length - 1; i++) {
-              var reg = new RegExp("\\{" + i + "\\}", "gm");
+          let s = arguments[0];
+          for (let i = 0; i < arguments.length - 1; i++) {
+              const reg = new RegExp('\\{' + i + '\\}', 'gm');
               s = s.replace(reg, arguments[i + 1]);
           }
           return s;
     };
 
-    var CONSTANTS = {
+    const CONSTANTS = {
         ERRORS : {
-            SELECT_DOM : "Error while apply selectors for page elements",
-            UPDATE_DOM : "Error while update page elements",
-            REQUEST: "Error while request sound page",
-            PROCESS: "Error while process sound page"
+            SELECT_DOM : 'Error while apply selectors for page elements',
+            UPDATE_DOM : 'Error while update page elements',
+            REQUEST: 'Error while request sound page',
+            PROCESS: 'Error while process sound page'
         },
         SELECTORS: {
-            ALBUM: ".trackView",//#trackInfo
-            SOUNDS: "[itemtype='http://www.schema.org/MusicRecording']",//.track_row_view
-            SOUND: "table:nth-child(1) tr:nth-child(1) td:nth-child(2) a",
-            PAGE_HEAD: ".inline_player",
-            DOWNLOAD_LNK: "\"mp3-128\"",
-            SAVE_LNK: "bcs_save-lnk",
-            SAVE_BTN: "bcs_save-btn"
+            ALBUM: '.trackView', // #trackInfo
+            SOUNDS: '[itemtype="http://www.schema.org/MusicRecording"]', // .track_row_view
+            SOUND: 'table:nth-child(1) tr:nth-child(1) td:nth-child(2) a',
+            SOUND_NAME: '#name-section',
+            PAGE_HEAD: '.inline_player',
+            DOWNLOAD_LNK: '"mp3-128"',
+            SAVE_LNK: 'bcs_save-lnk',
+            SAVE_BTN: 'bcs_save-btn'
         },
         HTML: {
-            SAVE_LNK_TEMPLATE: "<a class='bcs_save-lnk' data-page='{0}' href='javascript:void(0)'>download track</a>",
-            SAVE_BTN_TEMPLATE: "<h4 class='bcs_save-wrapper'><a class='bcs_save-btn' href='javascript:void(0)'>Download track</a></h4>"
-        }
+            SAVE_LNK_TEMPLATE: `<a class='bcs_save-lnk' data-page='{0}' data-name='{1}' href='javascript:void(0)'>download track</a>`,
+            SAVE_BTN_TEMPLATE: `<h4 class='bcs_save-wrapper'><a class='bcs_save-btn' href='javascript:void(0)'>Download track</a></h4>`
+        },
+        NO_NAME: '_'
     };
 
-    var settings = {
+    const settings = {
         url: window.location.origin
     };
 
     return {
         loading: false,
-        init: function() {
-            if (BandcampSaver.preparePage()){
+
+        init: () => {
+            if (BandcampSaver.preparePage()) {
                 BandcampSaver.bindUIActions();
-            };
+            }
         },
-        preparePage: function(){
-            var sounds;
-            try{
-                sounds = $(CONSTANTS.SELECTORS.ALBUM + " " + CONSTANTS.SELECTORS.SOUNDS);
-            }catch(e){
-                console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.SELECT_DOM);
+
+        preparePage: () => {
+            let sounds;
+
+            try {
+                sounds = $(`${CONSTANTS.SELECTORS.ALBUM} ${CONSTANTS.SELECTORS.SOUNDS}`);
+            } catch(e) {
+                console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.SELECT_DOM}`);
                 return false;
             }
-            try{
-                $(sounds).each(function(){
-                    var soundPage, soundInfo = $(this).find("td")[2];
-                    $(soundInfo).find("a").each(function() {
-                        soundPage = $(this).attr("href");
+
+            try {
+                $(sounds).each((i, sound) => {
+                    const soundInfo = $(sound).find('td')[2];
+
+                    let soundPage = '';
+                    let soundName = CONSTANTS.NO_NAME;
+
+                    $(soundInfo).find('a').each((i, a) => {
+                        soundPage = $(a).attr('href');
                         if (soundPage) return false;
                     });
-                    var lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage);
+                    try {
+                        soundName = soundInfo.children[0].children[0].innerText;
+                    } catch(e) {}
+
+                    const lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage, soundName);
                     $(soundInfo).children().append(lnk);
                 });
                 $(CONSTANTS.SELECTORS.PAGE_HEAD).after(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
-            }catch(e){
-                console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.UPDATE_DOM);
+
+            } catch(e) {
+                console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.UPDATE_DOM}`);
                 return false;
             }
+
             return true;
         },
-        download: function(elem, forcibly){
+        download: (elem) => {
             //get sound page
+
             BandcampSaver.loading = true;
-            $.get(settings.url + $(elem).data("page"), function(data) {
-                try{
-                    var index = data.indexOf(CONSTANTS.SELECTORS.DOWNLOAD_LNK);
-                    if (index >= 0){
-                        var tempData = '';
-                        for (var i = index; data[i] != '}'; ++i) {
-                            if (data[i] !== "'" && data[i] !== '"') {
+
+            $.get(settings.url + $(elem).data('page'), data => {
+
+                try {
+                    const index = data.indexOf(CONSTANTS.SELECTORS.DOWNLOAD_LNK);
+
+                    if (index >= 0) {
+
+                        let tempData = '';
+                        for (let i = index; data[i] !== '}'; ++i) {
+                            if (data[i] !== `'` && data[i] !== `"`) {
                                 tempData += data[i];
                             }
                         }
-                        var fromPosition = tempData.indexOf(':') + 1
-                        var downloadLnk = tempData.substring(fromPosition);
-                        //prepare for downloading
-                        var trackId = Math.random().toString(36).substring(7);
-                        $(elem).attr("id", trackId);
-                        $(elem).attr("download", "");
-                        $(elem).attr("href", downloadLnk);
-                        //downloading is here
-                        document.getElementById(trackId).click();
-                        //clear
-                        if (forcibly){
-                            setTimeout(function() {
-                                $(elem).removeAttr("id")
-                                $(elem).removeAttr("download");
-                                $(elem).attr("href", "javascript:void(0)");
-                                BandcampSaver.loading = false;
-                            }, 300);
-                        }else{
+
+                        const fromPosition = tempData.indexOf(':') + 1;
+                        const url = tempData.substring(fromPosition);
+                        const filename = $(elem).data('name');
+                        const secret = 'ldibchichoihomejekglfdochkboepai';
+
+                        chrome.runtime.sendMessage(CONSTANTS.APP_ID, { url, filename, secret }, { includeTlsChannelId: true }, (res) => {
+                            if (res.error) {
+                                console.error(`Error occurred due ${res.filename} download!`);
+                            } else {
+                                console.log(`${res.filename} was downloaded!`);
+                            }
                             BandcampSaver.loading = false;
-                        }
+                        });
                     }
-                }catch(e){
-                    console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.PROCESS);
+                } catch(e) {
+                    console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.REQUEST}`);
                     BandcampSaver.loading = false;
                 }
-            }).fail(function(e) {
-                console.log(new Date().toISOString() + " | Bandcamp Saver | " + CONSTANTS.ERRORS.REQUEST);
+
+            }).fail(e => {
+                console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.REQUEST}`);
                 BandcampSaver.loading = false;
             });
         },
-        bindUIActions: function() {
-            $(document).on("click", "." + CONSTANTS.SELECTORS.SAVE_LNK, function(event) {
-                if (!event.target.hasAttribute("download") && !BandcampSaver.loading){
+        bindUIActions: () => {
+            $(document).on('click', `.${CONSTANTS.SELECTORS.SAVE_LNK}`, (event) => {
+                if (!BandcampSaver.loading) {
                     BandcampSaver.download($(event.target));
                 }
             });
-            $(document).on("click", "." + CONSTANTS.SELECTORS.SAVE_BTN, function(event) {
+            $(document).on('click', `.${CONSTANTS.SELECTORS.SAVE_BTN}`, (event) => {
                 if (!BandcampSaver.loading){
-                    var sound = $(CONSTANTS.SELECTORS.ALBUM + " " + CONSTANTS.SELECTORS.SOUND);
-                    $(event.target).data("page", sound.attr("href"));
-                    BandcampSaver.download($(event.target), true);
+                    const sound = $(`${CONSTANTS.SELECTORS.ALBUM} ${CONSTANTS.SELECTORS.SOUND}`);
+                    const page = sound.attr('href');
+
+                    let name = CONSTANTS.NO_NAME;
+                    if (sound.text()) {
+                        name = sound.text()
+                    } else {
+                        const nameElement = $(CONSTANTS.SELECTORS.SOUND_NAME);
+                        try {
+                            const _name = nameElement.children()[0].innerText;
+                            if (_name) name = _name;
+                        } catch(e) {}
+                    }
+
+                    $(event.target).data('name', name);
+                    $(event.target).data('page', page);
+
+                    BandcampSaver.download($(event.target));
                 }
             });
         }
@@ -128,6 +159,6 @@ BandcampSaver = (function(){
 
 })();
 
-$(document).ready(function() {
+$(document).ready(() => {
     BandcampSaver.init();
 });
