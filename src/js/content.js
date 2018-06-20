@@ -94,7 +94,6 @@ BandcampSaver = (() => {
                     const index = data.indexOf(CONSTANTS.SELECTORS.DOWNLOAD_LNK);
 
                     if (index >= 0) {
-
                         let tempData = '';
                         for (let i = index; data[i] !== '}'; ++i) {
                             if (data[i] !== `'` && data[i] !== `"`) {
@@ -109,7 +108,7 @@ BandcampSaver = (() => {
 
                         chrome.runtime.sendMessage(CONSTANTS.APP_ID, { url, filename, secret }, { includeTlsChannelId: true }, (res) => {
                             if (res.error) {
-                                console.error(`Error occurred due ${res.filename} download!`);
+                                console.error(`Error occurred due ${res.filename}.mp3 download!`);
                             } else {
                                 console.log(`${res.filename} was downloaded!`);
                             }

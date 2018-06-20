@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         try {
             chrome.downloads.download({
                 url,
-                filename: `${filename}.mp3`,
+                // filename: `${filename}.mp3`, // TODO - fix it!!!
                 saveAs: false
             });
         } catch(e) {
