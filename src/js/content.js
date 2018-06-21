@@ -41,9 +41,32 @@ BandcampSaver = (() => {
         loading: false,
 
         init: () => {
-            if (BandcampSaver.preparePage()) {
-                BandcampSaver.bindUIActions();
+            const isBandcampPage = BandcampSaver.isBandcampPage();
+
+            if (isBandcampPage) {
+                const prepared = BandcampSaver.preparePage();
+
+                if (prepared) {
+                    BandcampSaver.bindUIActions();
+                }
             }
+        },
+
+        isBandcampPage: () => {
+            const metaElements = document.getElementsByTagName('meta');
+
+            if (metaElements && metaElements.length) {
+                const metaContents = [...document.getElementsByTagName('meta')].map(x => x.content || '');
+
+                if (metaContents && metaContents.length) {
+                    return metaContents.some(metaContent => {
+                        const parsedMeta = metaContent.toLowerCase();
+                        return parsedMeta.indexOf('bandcamp') >= 0;
+                    });
+                }
+            }
+
+            return false;
         },
 
         preparePage: () => {
@@ -74,6 +97,7 @@ BandcampSaver = (() => {
                     const lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage, soundName);
                     $(soundInfo).children().append(lnk);
                 });
+
                 $(CONSTANTS.SELECTORS.PAGE_HEAD).after(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
 
             } catch(e) {

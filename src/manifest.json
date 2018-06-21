@@ -2,12 +2,11 @@
     "manifest_version": 2,
 
     "name": "Bandcamp Saver",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Feel free to download mp3 from Bandcamp",
 
     "permissions": [
-        "http://*/*",
-        "https://*/*",
+        "*://*/*",
         "tabs",
         "background",
         "downloads"
@@ -21,7 +20,7 @@
     "content_scripts": [
     {
       "matches": [
-          "*://*.bandcamp.com/*"
+        "*://*/*"
       ],
       "js": [
           "libs/jquery-2.1.1.min.js",
@@ -36,16 +35,5 @@
   "background": {
     "scripts": ["js/background.js"],
     "persistent": false
-  },
-
-  "externally_connectable": {
-    "ids": [
-      "*"
-    ],
-    "matches": [
-      "*://*.bandcamp.com/*"
-    ],
-    "accepts_tls_channel_id": true
   }
-
 }
