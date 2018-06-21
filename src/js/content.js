@@ -21,6 +21,7 @@ BandcampSaver = (() => {
             SOUNDS: '[itemtype="http://www.schema.org/MusicRecording"]', // .track_row_view
             SOUND: 'table:nth-child(1) tr:nth-child(1) td:nth-child(2) a',
             SOUND_NAME: '#name-section',
+            SOUND_DISABLED: '.play_status.disabled',
             PAGE_HEAD: '.inline_player',
             DOWNLOAD_LNK: '"mp3-128"',
             SAVE_LNK: 'bcs_save-lnk',
@@ -81,6 +82,9 @@ BandcampSaver = (() => {
 
             try {
                 $(sounds).each((i, sound) => {
+                    const disabled = $(sound).find(CONSTANTS.SELECTORS.SOUND_DISABLED);
+                    if (disabled.length) return true;
+
                     const soundInfo = $(sound).find('td')[2];
 
                     let soundPage = '';
