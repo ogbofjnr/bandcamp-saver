@@ -131,7 +131,7 @@ BandcampSaver = (() => {
 
                         const fromPosition = tempData.indexOf(':') + 1;
                         const url = tempData.substring(fromPosition);
-                        const filename = $(elem).data('name');
+                        const filename = `${$(elem).data('name')}`;
                         const secret = 'ldibchichoihomejekglfdochkboepai';
 
                         chrome.runtime.sendMessage(CONSTANTS.APP_ID, { url, filename, secret }, { includeTlsChannelId: true }, (res) => {
