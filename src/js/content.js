@@ -1,12 +1,12 @@
 BandcampSaver = (() => {
 
-    String.format = function() {
-          let s = arguments[0];
-          for (let i = 0; i < arguments.length - 1; i++) {
-              const reg = new RegExp('\\{' + i + '\\}', 'gm');
-              s = s.replace(reg, arguments[i + 1]);
-          }
-          return s;
+    const format = function() {
+        let s = arguments[0];
+        for (let i = 0; i < arguments.length - 1; i++) {
+            const reg = new RegExp('\\{' + i + '\\}', 'gm');
+            s = s.replace(reg, arguments[i + 1]);
+        }
+        return s;
     };
 
     const CONSTANTS = {
@@ -98,7 +98,7 @@ BandcampSaver = (() => {
                         soundName = soundInfo.children[0].children[0].innerText;
                     } catch(e) {}
 
-                    const lnk = String.format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage, soundName);
+                    const lnk = format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage, soundName);
                     $(soundInfo).children().append(lnk);
                 });
 
@@ -131,17 +131,17 @@ BandcampSaver = (() => {
 
                         const fromPosition = tempData.indexOf(':') + 1;
                         const url = tempData.substring(fromPosition);
-                        const filename = `${$(elem).data('name')}`;
                         const secret = 'ldibchichoihomejekglfdochkboepai';
 
-                        chrome.runtime.sendMessage(CONSTANTS.APP_ID, { url, filename, secret }, { includeTlsChannelId: true }, (res) => {
-                            if (res.error) {
-                                console.error(`Error occurred due ${res.filename}.mp3 download!`);
-                            } else {
-                                console.log(`${res.filename} was downloaded!`);
-                            }
-                            BandcampSaver.loading = false;
-                        });
+                        let filename = '';
+                        try { filename = `${$(elem).data('name')}`.replace(/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$|([<>:"\/\\|?*])|(\.|\s)$/ig, '_'); } catch(e) {}
+
+                        chrome.runtime.sendMessage(
+                            CONSTANTS.APP_ID,
+                            { url, filename, secret },
+                            { includeTlsChannelId: true },
+                            () => { BandcampSaver.loading = false; }
+                        );
                     }
                 } catch(e) {
                     console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.REQUEST}`);

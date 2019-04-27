@@ -1,18 +1,20 @@
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    let error = false;
+chrome.runtime.onMessage.addListener((request, sender, cb) => {
     const { url, filename, secret } = request;
 
-    if (url /*&& filename*/ && secret === 'ldibchichoihomejekglfdochkboepai') {
+    if (url && secret === 'ldibchichoihomejekglfdochkboepai') {
         try {
-            chrome.downloads.download({
-                url,
-                // filename: `${filename}.mp3`, // TODO - fix it!!!
-                saveAs: false
-            });
-        } catch(e) {
-            error = true;
-        }
-    }
+            const params = { url, saveAs: false };
+            if (filename) params.filename =`${filename}.mp3`;
 
-    sendResponse({ error, ...request });
+            chrome.downloads.download(params, (res) => {
+                if (!res) {
+                    params.filename = `${Date.now()}.mp3`;
+                    chrome.downloads.download(params);
+                }
+            });
+
+        } catch(e) {}
+
+        cb();
+    }
 });
