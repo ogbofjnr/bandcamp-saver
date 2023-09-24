@@ -1,39 +1,40 @@
 {
-    "manifest_version": 2,
+  "manifest_version": 3,
 
-    "name": "Bandcamp Saver",
-    "version": "1.2.5",
-    "description": "Feel free to download mp3 from Bandcamp",
+  "name": "Bandcamp Saver",
+  "version": "1.2.5",
+  "description": "Feel free to download mp3 from Bandcamp",
 
-    "permissions": [
-        "*://*/*",
-        "tabs",
-        "background",
-        "downloads"
-    ],
+  "permissions": [
+      "tabs",
+      "downloads"
+  ],
 
-    "browser_action": {
-        "default_title": "Bandcamp Saver",
-        "default_icon":  "images/icon128.png"
-    },
+  "host_permissions": [
+      "*://*/*"
+  ],
 
-    "content_scripts": [
-    {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-          "libs/jquery-2.1.1.min.js",
-          "js/content.js"
-      ],
-      "css": [
-          "css/style.css"
-      ]
-    }
+  "action": {
+      "default_title": "Bandcamp Saver",
+      "default_icon":  "images/icon128.png"
+  },
+
+  "content_scripts": [
+      {
+          "matches": [
+              "*://*/*"
+          ],
+          "js": [
+              "libs/jquery-2.1.1.min.js",
+              "js/content.js"
+          ],
+          "css": [
+              "css/style.css"
+          ]
+      }
   ],
 
   "background": {
-    "scripts": ["js/background.js"],
-    "persistent": false
+      "service_worker": "js/background.js"
   }
 }

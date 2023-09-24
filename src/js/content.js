@@ -1,6 +1,6 @@
 BandcampSaver = (() => {
 
-    const format = function() {
+    const format = function () {
         let s = arguments[0];
         for (let i = 0; i < arguments.length - 1; i++) {
             const reg = new RegExp('\\{' + i + '\\}', 'gm');
@@ -10,9 +10,9 @@ BandcampSaver = (() => {
     };
 
     const CONSTANTS = {
-        ERRORS : {
-            SELECT_DOM : 'Error while apply selectors for page elements',
-            UPDATE_DOM : 'Error while update page elements',
+        ERRORS: {
+            SELECT_DOM: 'Error while apply selectors for page elements',
+            UPDATE_DOM: 'Error while update page elements',
             REQUEST: 'Error while request sound page',
             PROCESS: 'Error while process sound page'
         },
@@ -75,7 +75,7 @@ BandcampSaver = (() => {
 
             try {
                 sounds = $(`${CONSTANTS.SELECTORS.ALBUM} ${CONSTANTS.SELECTORS.SOUNDS}`);
-            } catch(e) {
+            } catch (e) {
                 console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.SELECT_DOM}`);
                 return false;
             }
@@ -96,7 +96,7 @@ BandcampSaver = (() => {
                     });
                     try {
                         soundName = soundInfo.children[0].children[0].innerText;
-                    } catch(e) {}
+                    } catch (e) { }
 
                     const lnk = format(CONSTANTS.HTML.SAVE_LNK_TEMPLATE, soundPage, soundName);
                     $(soundInfo).children().append(lnk);
@@ -104,7 +104,7 @@ BandcampSaver = (() => {
 
                 $(CONSTANTS.SELECTORS.PAGE_HEAD).after(CONSTANTS.HTML.SAVE_BTN_TEMPLATE);
 
-            } catch(e) {
+            } catch (e) {
                 console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.UPDATE_DOM}`);
                 return false;
             }
@@ -112,39 +112,40 @@ BandcampSaver = (() => {
             return true;
         },
         download: (elem) => {
+
+            console.log("download started")
             //get sound page
 
             BandcampSaver.loading = true;
 
             $.get(settings.url + $(elem).data('page'), data => {
-
                 try {
-                    const index = data.indexOf(CONSTANTS.SELECTORS.DOWNLOAD_LNK);
+                    // console.log(s.slice(s.indexOf("mp3-128"), index + 500))
+                    const regex = /mp3-128&quot;:&quot;(https:\/\/[^"]+)&quot/;
+                    const match = data.match(regex);
+                    var url = ""
 
-                    if (index >= 0) {
-                        let tempData = '';
-                        for (let i = index; data[i] !== '}'; ++i) {
-                            if (data[i] !== `'` && data[i] !== `"`) {
-                                tempData += data[i];
-                            }
-                        }
-
-                        const fromPosition = tempData.indexOf(':') + 1;
-                        const url = tempData.substring(fromPosition);
-                        const secret = 'ldibchichoihomejekglfdochkboepai';
-
-                        let filename = '';
-                        try { filename = `${$(elem).data('name')}`.replace(/^(con|prn|aux|nul|com[0-9]|lpt[0-9])$|([<>:"\/\\|?*])|(\.|\s)$/ig, '_'); } catch(e) {}
-
-                        chrome.runtime.sendMessage(
-                            CONSTANTS.APP_ID,
-                            { url, filename, secret },
-                            { includeTlsChannelId: true },
-                            () => { BandcampSaver.loading = false; }
-                        );
+                    if (match && match[1]) {
+                        url = match[1]
+                    } else {
+                        throw new Error('link not found');
                     }
-                } catch(e) {
-                    console.error(`${new Date().toISOString()} | Bandcamp Saver | ${CONSTANTS.ERRORS.REQUEST}`);
+
+                    const secret = 'ldibchichoihomejekglfdochkboepai';
+
+                    let filename = $(elem).data('name');
+                    console.log("URL " + url)
+                    console.log("filename " + filename)
+
+                    chrome.runtime.sendMessage(
+                        CONSTANTS.APP_ID,
+                        { url, filename, secret },
+                        { includeTlsChannelId: true },
+                        () => { BandcampSaver.loading = false; }
+                    );
+                } catch (e) {
+                    console.error(`${new Date().toISOString()} | Bandcamp Saver | ${e.message} `);
+                    alert("An error occurred: " + e.message);
                     BandcampSaver.loading = false;
                 }
 
@@ -160,7 +161,7 @@ BandcampSaver = (() => {
                 }
             });
             $(document).on('click', `.${CONSTANTS.SELECTORS.SAVE_BTN}`, (event) => {
-                if (!BandcampSaver.loading){
+                if (!BandcampSaver.loading) {
                     const sound = $(`${CONSTANTS.SELECTORS.ALBUM} ${CONSTANTS.SELECTORS.SOUND}`);
                     const page = sound.attr('href');
 
@@ -172,7 +173,7 @@ BandcampSaver = (() => {
                         try {
                             const _name = nameElement.children()[0].innerText;
                             if (_name) name = _name;
-                        } catch(e) {}
+                        } catch (e) { }
                     }
 
                     $(event.target).data('name', name);
