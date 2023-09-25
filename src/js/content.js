@@ -127,7 +127,7 @@ BandcampSaver = (() => {
                     artist = decodeHtmlEntities(artist);
                     var track = getFirstMatch(data, /;title&quot;:&quot;((?:(?!&quot;).)+)/);
                     track = decodeHtmlEntities(track);
-                    if (track.includes('&')) {
+                    if (track.includes('&') ||  track.includes(' - ') ) {
                         const parts = track.split('-');
                         track=parts[1]
                         artist=parts[0]
@@ -150,9 +150,9 @@ BandcampSaver = (() => {
 
                     const secret = 'ldibchichoihomejekglfdochkboepai';
 
-                    var filename = artist + " - " + track + "[" + label + "]"
+                    var filename = artist.replace(/[\/]/g, '') + " - " + track.replace(/[\/]/g, '') + "[" + label.replace(/[\/]/g, '') + "]"
                     filename = decodeHtmlEntities(filename);
-                    // filename = filename.replace(/[^a-zA-Z0-9 \-.()_!@#$%^&+={}[\],;'~]/g, '_');
+                    filename = filename.replace(/[^a-zA-Z0-9 \-.()_!@#$%^&+={}[\],;'~]/g, '_');
                     console.log('filename:', filename);
 
                     // let filename = $(elem).data('name');
