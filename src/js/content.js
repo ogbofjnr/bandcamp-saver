@@ -122,20 +122,19 @@ BandcampSaver = (() => {
                 try {
                     // console.log(s.slice(s.indexOf("mp3-128"), index + 500))
                     const url = getFirstMatch(data, /mp3-128&quot;:&quot;(https:\/\/[^"]+)&quot;/);
-                    const artist = getFirstMatch(data, /artist&quot;:&quot;((?:(?!&quot;).)+)/);
-                    const track = getFirstMatch(data, /title&quot;:&quot;((?:(?!&quot;).)+)/);
-                    var label = getFirstMatch(data, /"recordLabel":{"@type":"MusicGroup","name":"([^"]+)"/);
-
-                    label = label.replace(/\brecords\b/i, '').trim().toUpperCase();
-
                     console.log('URL:', url);
+                    const artist = getFirstMatch(data, /&quot;artist&quot;:&quot;((?:(?!&quot;).)+)/);
                     console.log('Artist:', artist);
+                    const track = getFirstMatch(data, /;title&quot;:&quot;((?:(?!&quot;).)+)/);
                     console.log('Track:', track);
+                    var label = getFirstMatch(data, /"recordLabel":{"@type":"MusicGroup","name":"([^"]+)"/);
+                    label = label.replace(/\brecords\b/i, '').trim().toUpperCase();
                     console.log('Label:', label);
 
                     const secret = 'ldibchichoihomejekglfdochkboepai';
 
-                    let filename = artist + " - " + track + "[" + label + "]"
+                    var filename = artist + " - " + track + "[" + label + "]"
+                    filename = filename.replace(/[^a-zA-Z0-9 \-.()_!@#$%^&+={}[\],;'~]/g, '_');
                     console.log('filename:', filename);
 
                     // let filename = $(elem).data('name');
