@@ -121,21 +121,24 @@ BandcampSaver = (() => {
             $.get(settings.url + $(elem).data('page'), data => {
                 try {
                     // console.log(s.slice(s.indexOf("mp3-128"), index + 500))
-                    const regex = /mp3-128&quot;:&quot;(https:\/\/[^"]+)&quot/;
-                    const match = data.match(regex);
-                    var url = ""
+                    const url = getFirstMatch(data, /mp3-128&quot;:&quot;(https:\/\/[^"]+)&quot;/);
+                    const artist = getFirstMatch(data, /artist&quot;:&quot;((?:(?!&quot;).)+)/);
+                    const track = getFirstMatch(data, /title&quot;:&quot;((?:(?!&quot;).)+)/);
+                    var label = getFirstMatch(data, /"recordLabel":{"@type":"MusicGroup","name":"([^"]+)"/);
 
-                    if (match && match[1]) {
-                        url = match[1]
-                    } else {
-                        throw new Error('link not found');
-                    }
+                    label = label.replace(/\brecords\b/i, '').trim().toUpperCase();
+
+                    console.log('URL:', url);
+                    console.log('Artist:', artist);
+                    console.log('Track:', track);
+                    console.log('Label:', label);
 
                     const secret = 'ldibchichoihomejekglfdochkboepai';
 
-                    let filename = $(elem).data('name');
-                    console.log("URL " + url)
-                    console.log("filename " + filename)
+                    let filename = artist + " - " + track + "[" + label + "]"
+                    console.log('filename:', filename);
+
+                    // let filename = $(elem).data('name');
 
                     chrome.runtime.sendMessage(
                         CONSTANTS.APP_ID,
@@ -190,3 +193,13 @@ BandcampSaver = (() => {
 $(document).ready(() => {
     BandcampSaver.init();
 });
+
+
+function getFirstMatch(data, regex) {
+    const match = data.match(regex);
+    if (match && match[1]) {
+        return match[1];
+    } else {
+        throw new Error('Match not found');
+    }
+}
