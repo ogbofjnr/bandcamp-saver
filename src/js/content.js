@@ -121,20 +121,22 @@ BandcampSaver = (() => {
             $.get(settings.url + $(elem).data('page'), data => {
                 try {
                     // console.log(s.slice(s.indexOf("mp3-128"), index + 500))
-                    const url = getFirstMatch(data, /mp3-128&quot;:&quot;(https:\/\/[^"]+)&quot;/);
+                    const url = getFirstMatch(data, /mp3-128&quot;:&quot;((?:(?!&quot;).)+)/);
                     console.log('URL:', url);
                     const artist = getFirstMatch(data, /&quot;artist&quot;:&quot;((?:(?!&quot;).)+)/);
                     console.log('Artist:', artist);
                     const track = getFirstMatch(data, /;title&quot;:&quot;((?:(?!&quot;).)+)/);
                     console.log('Track:', track);
-                    var label = getFirstMatch(data, /"recordLabel":{"@type":"MusicGroup","name":"([^"]+)"/);
+                    // var label = getFirstMatch(data, /"recordLabel":{"@type":"MusicGroup","name":"([^"]+)"/);
+                    var label = getFirstMatch(data,/<meta\s+property="og:site_name"\s+content="([^"]+)"/);
                     label = label.replace(/\brecords\b/i, '').trim().toUpperCase();
                     console.log('Label:', label);
 
                     const secret = 'ldibchichoihomejekglfdochkboepai';
 
                     var filename = artist + " - " + track + "[" + label + "]"
-                    filename = filename.replace(/[^a-zA-Z0-9 \-.()_!@#$%^&+={}[\],;'~]/g, '_');
+                    filename = decodeHtmlEntities(filename);
+                    // filename = filename.replace(/[^a-zA-Z0-9 \-.()_!@#$%^&+={}[\],;'~]/g, '_');
                     console.log('filename:', filename);
 
                     // let filename = $(elem).data('name');
@@ -201,4 +203,10 @@ function getFirstMatch(data, regex) {
     } else {
         throw new Error('Match not found');
     }
+}
+
+function decodeHtmlEntities(str) {
+    var textArea = document.createElement('textarea');
+    textArea.innerHTML = str;
+    return textArea.value;
 }
