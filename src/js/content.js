@@ -123,14 +123,30 @@ BandcampSaver = (() => {
                     // console.log(s.slice(s.indexOf("mp3-128"), index + 500))
                     const url = getFirstMatch(data, /mp3-128&quot;:&quot;((?:(?!&quot;).)+)/);
                     console.log('URL:', url);
-                    const artist = getFirstMatch(data, /&quot;artist&quot;:&quot;((?:(?!&quot;).)+)/);
-                    console.log('Artist:', artist);
-                    const track = getFirstMatch(data, /;title&quot;:&quot;((?:(?!&quot;).)+)/);
+                    var artist = getFirstMatch(data, /&quot;artist&quot;:&quot;((?:(?!&quot;).)+)/);
+                    artist = decodeHtmlEntities(artist);
+                    var track = getFirstMatch(data, /;title&quot;:&quot;((?:(?!&quot;).)+)/);
+                    track = decodeHtmlEntities(track);
+                    if (track.includes('&')) {
+                        const parts = track.split('-');
+                        track=parts[1]
+                        artist=parts[0]
+                    }
                     console.log('Track:', track);
-                    // var label = getFirstMatch(data, /"recordLabel":{"@type":"MusicGroup","name":"([^"]+)"/);
-                    var label = getFirstMatch(data,/<meta\s+property="og:site_name"\s+content="([^"]+)"/);
+                    console.log('Artist:', artist);
+
+                    label = getFirstMatch(data, /"recordLabel":{"@type":"MusicGroup","name":"([^"]+)"/);
+                    if (!label) {
+                        label = getFirstMatch(data, /;label_name&quot;:&quot;([^"]+)&quot/);
+                    }
+                    if (!label) {
+                        label = getFirstMatch(data,/<meta\s+property="og:site_name"\s+content="([^"]+)"/);
+                    }
+
                     label = label.replace(/\brecords\b/i, '').trim().toUpperCase();
                     console.log('Label:', label);
+
+                    // console.log((i = data.indexOf('class="track_info"')) !== -1 ? data.slice(i + 18, i + 518) : 'Substring not found.');
 
                     const secret = 'ldibchichoihomejekglfdochkboepai';
 
@@ -198,11 +214,7 @@ $(document).ready(() => {
 
 function getFirstMatch(data, regex) {
     const match = data.match(regex);
-    if (match && match[1]) {
-        return match[1];
-    } else {
-        throw new Error('Match not found');
-    }
+    return match && match[1] ? match[1] : null;
 }
 
 function decodeHtmlEntities(str) {
