@@ -130,7 +130,7 @@ BandcampSaver = (() => {
                     if (track.includes('&') ||  track.includes(' - ')) {
                         const parts = track.split('-');
                         artist=parts[0]
-                        track = length(parts)>1 ? parts[1] : "unknown"
+                        track = parts.length >1 ? parts[1] : "unknown"
                     }
                     console.log('Track:', track);
                     console.log('Artist:', artist);
