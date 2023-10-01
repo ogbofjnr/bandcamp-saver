@@ -127,10 +127,10 @@ BandcampSaver = (() => {
                     artist = decodeHtmlEntities(artist);
                     var track = getFirstMatch(data, /;title&quot;:&quot;((?:(?!&quot;).)+)/);
                     track = decodeHtmlEntities(track);
-                    if (!track || track.includes('&') ||  track.includes(' - ')) {
+                    if (track.includes('&') ||  track.includes(' - ')) {
                         const parts = track.split('-');
-                        track=parts[1]
                         artist=parts[0]
+                        track = length(parts)>1 ? parts[1] : "unknown"
                     }
                     console.log('Track:', track);
                     console.log('Artist:', artist);
